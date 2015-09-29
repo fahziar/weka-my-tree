@@ -97,6 +97,10 @@ public class Main {
         J48 j48NumWeather = new J48();
         J48 j48Iris = new J48();
 
+        weka.classifiers.trees.my.J48 myJ48Weather = new weka.classifiers.trees.my.J48();
+        weka.classifiers.trees.my.J48 myJ48NumWeather = new weka.classifiers.trees.my.J48();
+        weka.classifiers.trees.my.J48 myJ48Iris = new weka.classifiers.trees.my.J48();
+
         NaiveBayes naiveWeather = new NaiveBayes();
         NaiveBayes naiveNumWeather = new NaiveBayes();
         NaiveBayes naiveIris = new NaiveBayes();
@@ -156,6 +160,18 @@ public class Main {
             irisEval.crossValidateModel(j48Iris, irisDs, 10, new Random(1));
             System.out.println(irisEval.toSummaryString("\nJ48 iris Results\n======\n", false));
 
+            // MyJ48
+            Evaluation weatherEvalMyJ48 = new Evaluation(weatherDs);
+            weatherEvalMyJ48.crossValidateModel(myJ48Weather, weatherDs, 10, new Random(1));
+            System.out.println(weatherEvalMyJ48.toSummaryString("\nMyJ48 Weather Nominal Results\n======\n", false));
+
+            Evaluation weatherNumEvalMyJ48 = new Evaluation(numWeatherDs);
+            weatherNumEvalMyJ48.crossValidateModel(myJ48NumWeather, numWeatherDs, 10, new Random(1));
+            System.out.println(weatherNumEvalMyJ48.toSummaryString("\nMyJ48 Weather Numeric Results\n======\n", false));
+
+            Evaluation irisEvalMyJ48 = new Evaluation(irisDs);
+            irisEvalMyJ48.crossValidateModel(myJ48Iris, irisDs, 10, new Random(1));
+            System.out.println(irisEvalMyJ48.toSummaryString("\nMyJ48 Iris Results\n======\n", false));
 
         } catch (Exception e){
             e.printStackTrace();
