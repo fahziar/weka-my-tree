@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Class-Path: JFlex.jar junit.jar java-cup.jar java-cup.jar JFlex.jar ju
+ nit.jar
+Main-Class: weka.gui.GUIChooser
+

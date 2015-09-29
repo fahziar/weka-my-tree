@@ -1,0 +1,17 @@
+<component name="ArtifactManager">
+  <artifact name="weka-stable:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/weka_stable_jar</output-path>
+    <root id="root">
+      <element id="archive" name="weka-stable.jar">
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/src/main/java/MANIFES.MF/META-INF/MANIFEST.MF" />
+        </element>
+        <element id="module-output" name="weka-stable" />
+      </element>
+      <element id="file-copy" path="$PROJECT_DIR$/lib/JFlex.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/junit.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/java-cup.jar" />
+      <element id="library" level="project" name="java-cup" />
+    </root>
+  </artifact>
+</component>
