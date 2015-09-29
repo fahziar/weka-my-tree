@@ -66,9 +66,9 @@ public class Main {
         //Resample dataset
         try {
             System.out.println("Filtering dataset");
-//            weatherDs = resample(weatherDs);
-//            numWeatherDs = resample(numWeatherDs);
-//            irisDs = resample(irisDs);
+            weatherDs = resample(weatherDs);
+            numWeatherDs = resample(numWeatherDs);
+            irisDs = resample(irisDs);
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Failted to filter dataset");
@@ -117,27 +117,29 @@ public class Main {
 
         //10 cross validation dataset
         try {
-            Evaluation weatherEval = new Evaluation(weatherDs);
+            Evaluation weatherEvalMyId3 = new Evaluation(weatherDs);
+            Evaluation weatherEvalId3 = new Evaluation(weatherDs);
+            Evaluation weatherEvalJ48 = new Evaluation(weatherDs);
             Evaluation weatherNumEval = new Evaluation(numWeatherDs);
             Evaluation irisEval = new Evaluation(irisDs);
 
             //My ID3
-//            weatherEval.crossValidateModel(myId3Weather, weatherDs, 10, new Random(1));
-            System.out.println(weatherEval.toSummaryString("\nMyID3 Weathenr Nominal Results\n======\n", false));
+            weatherEvalMyId3.crossValidateModel(myId3Weather, weatherDs, 10, new Random(1));
+            System.out.println(weatherEvalMyId3.toSummaryString("\nMyID3 Weathenr Nominal Results\n======\n", false));
 //            irisEval.crossValidateModel(myId3Iris, irisDs, 10, new Random(1));
 //            System.out.println(irisEval.toSummaryString("\nMyID3 iris Results\n======\n", false));
 
             //ID3
-            weatherEval.crossValidateModel(id3Weather, weatherDs, 10, new Random(1));
-            System.out.println(weatherEval.toSummaryString("\nID3 Weathenr Nominal Results\n======\n", false));
+            weatherEvalId3.crossValidateModel(id3Weather, weatherDs, 10, new Random(1));
+            System.out.println(weatherEvalId3.toSummaryString("\nID3 Weathenr Nominal Results\n======\n", false));
 //            irisEval.crossValidateModel(id3Iris, irisDs, 10, new Random(1));
 //            System.out.println(irisEval.toSummaryString("\nID3 iris Results\n======\n", false));
 
             //J48
-            weatherEval.crossValidateModel(j48Weather, weatherDs, 10, new Random(1));
-            System.out.println(weatherEval.toSummaryString("\nJ48 Weather Nominal Results\n======\n", false));
+            weatherEvalJ48.crossValidateModel(j48Weather, weatherDs, 10, new Random(1));
+            System.out.println(weatherEvalJ48.toSummaryString("\nJ48 Weather Nominal Results\n======\n", false));
             weatherNumEval.crossValidateModel(j48NumWeather, numWeatherDs, 10, new Random(1));
-            System.out.println(weatherEval.toSummaryString("\nJ48 Weather Numeric Results\n======\n", false));
+            System.out.println(weatherNumEval.toSummaryString("\nJ48 Weather Numeric Results\n======\n", false));
             irisEval.crossValidateModel(j48Iris, irisDs, 10, new Random(1));
             System.out.println(irisEval.toSummaryString("\nJ48 iris Results\n======\n", false));
 

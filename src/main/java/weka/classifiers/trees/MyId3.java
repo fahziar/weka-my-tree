@@ -45,40 +45,7 @@ public class MyId3 extends Classifier implements Serializable {
         return out;
     }
 
-    private double calculateEntropy(Instances data){
-//        double classCounts[] = new double[data.numClasses()];
-//        Enumeration instEnum = data.enumerateInstances();
-//        while (instEnum.hasMoreElements()){
-//            Instance i = (Instance) instEnum.nextElement();
-//            classCounts[(int) i.classValue()]++;
-//        }
-//
-//        double entropy = 0.0;
-//        for (int i=0; i<classCounts.length; i++){
-//            if (classCounts[i] > 0) {
-//                double probability = classCounts[i] / data.numInstances();
-//                entropy -=  probability * Utils.log2(probability);
-//            }
-//        }
-//        return entropy;
-
-        double [] classCounts = new double[data.numClasses()];
-        Enumeration instEnum = data.enumerateInstances();
-        while (instEnum.hasMoreElements()) {
-            Instance inst = (Instance) instEnum.nextElement();
-            classCounts[(int) inst.classValue()]++;
-        }
-        double entropy = 0;
-        for (int j = 0; j < data.numClasses(); j++) {
-            if (classCounts[j] > 0) {
-                entropy -= classCounts[j] * Utils.log2(classCounts[j]);
-            }
-        }
-        entropy /= (double) data.numInstances();
-        return entropy + Utils.log2(data.numInstances());
-    }
-
-    private double computeEntropy(Instances data){
+    private double calculateEntropy(Instances data) {
         double classCounts[] = new double[data.numClasses()];
         Enumeration instEnum = data.enumerateInstances();
         while (instEnum.hasMoreElements()){
@@ -94,7 +61,6 @@ public class MyId3 extends Classifier implements Serializable {
             }
         }
         return entropy;
-
     }
 
     public Instances[] splitInstances(Instances instances, Attribute attribute){
@@ -135,28 +101,23 @@ public class MyId3 extends Classifier implements Serializable {
         return splitData;
     }
 
-//    private double getInfoGain(double entropy, int numData, Instances[] splitData, Attribute att){
-//        double infoGain = entropy;
-//
-//        for (int i=0; i<att.numValues(); i++){
-//            infoGain -= ((double) splitData[i].numInstances() / numData) * calculateEntropy(splitData[i]);
-//        }
-//
-//        return infoGain;
-//    }
+    private double getInfoGain(double entropy, Instances data, Attribute att){
+        double infoGain = entropy;
 
-    private double computeInfoGain(Instances data, Attribute att)
-            throws Exception {
-
-        double infoGain = computeEntropy(data);
         Instances[] splitData = splitData(data, att);
-        for (int j = 0; j < att.numValues(); j++) {
-            if (splitData[j].numInstances() > 0) {
-                infoGain -= ((double) splitData[j].numInstances() /
-                        (double) data.numInstances()) *
-                        computeEntropy(splitData[j]);
+        for (int i=0; i<att.numValues(); i++){
+            if (splitData[i].numInstances() > 0) {
+                try {
+                    infoGain -= ((double) splitData[i].numInstances() / data.numInstances()) * calculateEntropy(splitData[i]);
+                    if (Double.isNaN(infoGain)){
+                        System.out.println("Break");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
+
         return infoGain;
     }
 
@@ -174,6 +135,11 @@ public class MyId3 extends Classifier implements Serializable {
     }
 
     private void makeTree(Instances data){
+        if (data.numInstances() == 0) {
+            m_Attribute = null;
+            m_ClassValue = Instance.missingValue();
+            return;
+        }
         double entropy = calculateEntropy(data);
         double infoGain[] = new double[data.numAttributes()];
 
@@ -184,7 +150,8 @@ public class MyId3 extends Classifier implements Serializable {
             Instances[] splitData = splitData(data, att);
 //            infoGain[att.index()] = getInfoGain(entropy, data.numInstances(), splitData, att);
             try {
-                infoGain[att.index()] = computeInfoGain(data, att);
+//                infoGain[att.index()] = computeInfoGain(data, att);
+                infoGain[att.index()] = getInfoGain(entropy, data, att);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -198,16 +165,17 @@ public class MyId3 extends Classifier implements Serializable {
             m_Attribute = null;
 
             //create a leaf
-//            m_Distribution = new double[data.numClasses()];
-//
-//            Enumeration instEnum = data.enumerateInstances();
-//            while (instEnum.hasMoreElements()){
-//                Instance i = (Instance) instEnum.nextElement();
-//                m_Distribution[(int) i.classValue()]++;
-//            }
-//
-//            Utils.normalize(m_Distribution);
-            m_ClassValue = data.instance(0).classValue();
+            double[] m_Distribution = new double[data.numClasses()];
+
+            Enumeration instEnum = data.enumerateInstances();
+            while (instEnum.hasMoreElements()){
+                Instance i = (Instance) instEnum.nextElement();
+                m_Distribution[(int) i.classValue()]++;
+            }
+
+            Utils.normalize(m_Distribution);
+//            m_ClassValue = data.instance(0).classValue();
+            m_ClassValue = Utils.maxIndex(m_Distribution);
             m_ClassAtribute = data.classAttribute();
 
         } else {
