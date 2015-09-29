@@ -20,6 +20,9 @@ public class Main {
     private static final String DATASET_WEATHER = "weather.nominal.arff";
     private static final String DATASET_WEATHER_NUM = "weather.numeric.arff";
     private static final String DATASET_IRIS = "iris.arff";
+    private static final String DATASET_WEATHER_UNSEEN = "weather.nominal.unseen.arff";
+    private static final String DATASET_WEATHER_NUM_UNSEEN = "weather.numeric.unseen.arff";
+    private static final String DATASET_IRIS_UNSEEN = "iris.unseen.arff";
 
     private static Instances loadDataset(String location) throws Exception {
         ConverterUtils.DataSource dataSource = new ConverterUtils.DataSource(location);
@@ -54,9 +57,12 @@ public class Main {
         //Load dataset
         try {
             System.out.println("Loading dataset dataset");
+            System.out.println("========================");
             weatherDs = loadDataset(DATASET_WEATHER);
             numWeatherDs = loadDataset(DATASET_WEATHER_NUM);
             irisDs = loadDataset(DATASET_IRIS);
+            System.out.println("Success loading dataset");
+            System.out.println();
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Failed to load dataset");
@@ -66,9 +72,12 @@ public class Main {
         //Resample dataset
         try {
             System.out.println("Filtering dataset");
+            System.out.println("===================");
             weatherDs = resample(weatherDs);
             numWeatherDs = resample(numWeatherDs);
             irisDs = resample(irisDs);
+            System.out.println("Success filtering dataset");
+            System.out.println();
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Failted to filter dataset");
@@ -108,6 +117,8 @@ public class Main {
             naiveWeather.buildClassifier(weatherDs);
             naiveNumWeather.buildClassifier(numWeatherDs);
             naiveIris.buildClassifier(irisDs);
+            System.out.println("Success building classifier");
+            System.out.println();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,6 +128,8 @@ public class Main {
 
         //10 cross validation dataset
         try {
+            System.out.println("10 Cross Validation");
+            System.out.println("====================");
             Evaluation weatherEvalMyId3 = new Evaluation(weatherDs);
             Evaluation weatherEvalId3 = new Evaluation(weatherDs);
             Evaluation weatherEvalJ48 = new Evaluation(weatherDs);
@@ -153,6 +166,7 @@ public class Main {
         //Save model
         try {
             System.out.println("Saving model");
+            System.out.println("=============");
             SerializationHelper.write("myId3Weather.model", myId3Weather);
 //            SerializationHelper.write("myId3Iris.model", myId3Iris);
 
@@ -162,10 +176,38 @@ public class Main {
             SerializationHelper.write("J48Weather.model", j48Weather);
             SerializationHelper.write("J48NumWeather.model", j48NumWeather);
             SerializationHelper.write("J48Iris.model", j48Iris);
+            System.out.println("Done saving all models");
+            System.out.println();
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Failed to save model");
+        }
+
+        //Test with unseen instance
+        try {
+            System.out.println("Testing with unseen instance");
+            System.out.println("=============================");
+
+            Instances unseenWeather = loadDataset(DATASET_WEATHER_UNSEEN);
+            Instances unseenWeatherNum = loadDataset(DATASET_WEATHER_NUM_UNSEEN);
+            Instances unseenIris = loadDataset(DATASET_IRIS_UNSEEN);
+
+            //MyID3
+            System.out.println("Unseen weather MyID3: " + unseenWeather.attribute(4).value((int) myId3Weather.classifyInstance(unseenWeather.instance(0))));
+
+            //ID3
+            System.out.println("Unseen weather ID3: " + unseenWeather.attribute(4).value((int) id3Weather.classifyInstance(unseenWeather.instance(0))));
+
+            //J48
+            System.out.println("Unseen weather J48: " + unseenWeather.attribute(4).value((int) j48Weather.classifyInstance(unseenWeather.instance(0))));
+            System.out.println("Unseen weather numeric J48: " + unseenWeatherNum.attribute(4).value((int) j48NumWeather.classifyInstance(unseenWeatherNum.instance(0))));
+            System.out.println("Unseen iris J48: " + unseenIris.attribute(4).value((int) j48Iris.classifyInstance(unseenIris.instance(0))));
+
+
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Failed to test with unseen instace");
         }
     }
 }
